@@ -14,26 +14,32 @@ function onFormSubmit(event) {
     amount: amount.value
   };
   console.log(values);
-  
+    function createPromise(position, delay) {
+      return new Promise((resolve, reject) => {
+        const shouldResolve = Math.random() > 0.3;
 
-  for (let i = 0; i < values.amount; i += 1) {
-      console.log(i)
-    setTimeout(() => {
-      console.log(i);
 
-      createPromise(i, values.step)
+        setTimeout(() => {
+          if (shouldResolve) {
+            // Fulfill
+            resolve(position, delay);
+          } else {
+            // Reject
+            reject(position, delay);
+          }
+        }, values.delay)
+      });
+  };
+
+    for (let i = 0; i < values.amount; i += 1) {
+      createPromise(values.amount, values.step)
         .then(({ position, delay }) => {
           console.log(`✅ Fulfilled promise ${position} in ${delay}ms`);
         })
         .catch(({ position, delay }) => {
           console.log(`❌ Rejected promise ${position} in ${delay}ms`);
         });
-
-        
-    }, values.step);
-
-  };
-
+    };
 
 };
 
@@ -41,19 +47,22 @@ form.addEventListener('submit', onFormSubmit);
 
 
 function createPromise(position, delay) {
-  const shouldResolve = Math.random() > 0.3;
-
-  if (shouldResolve) {
-    // Fulfill
-    return Promise(resolve => {
-
-      setTimeout(() => resolve(position), delay);
-    });
-  } else {
-    // Reject
-    return Promise(reject => {
-      setTimeout(() => reject(position), delay);
-    });
-  };
+  return new Promise((resolve, reject) => {
+    const shouldResolve = Math.random() > 0.3;
+    
+    setTimeout(() => {
+      if (shouldResolve) {
+        // Fulfill
+        resolve(position, delay);
+      } else {
+        // Reject
+        reject(position, delay);
+      }
+    }, delay)
+  })
 };
+
+
+
+
 
